@@ -2,17 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
 using System.Windows.Input;
-using Phonebook_lab9.Services;
 
 namespace Phonebook_lab9.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
-        private readonly IDialogService _dialogService;
-
         // Коллекция контактов
         public ObservableCollection<Contact> Contacts { get; }
         private string _name = string.Empty;
@@ -38,9 +34,8 @@ namespace Phonebook_lab9.ViewModels
         // Команды
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
-        public MainViewModel(IDialogService dialogService)
+        public MainViewModel()
         {
-            _dialogService = dialogService;
             Contacts = new ObservableCollection<Contact>();
             AddCommand = new RelayCommand(
             AddContact,() => CanAddContact());
@@ -52,22 +47,16 @@ namespace Phonebook_lab9.ViewModels
         }
         private void AddContact()
         {
-            if (Contacts.Any(c => c.Phone == _phone))
-            {
-                _dialogService.ShowWarning("Контакт с таким номером уже существует!");
-                return;
-            }
             try
             {
                 var newContact = new Contact(Name, Phone);
                 Contacts.Add(newContact);
                 Name = string.Empty;
                 Phone = string.Empty;
-                _dialogService.ShowInfo("Контакт успешно добавлен!");
             }
             catch
             {
-                _dialogService.ShowError("Ошибка при добавлении контакта (проверьте формат номера).");
+
             }
         }
         private bool CanAddContact()
@@ -76,9 +65,7 @@ namespace Phonebook_lab9.ViewModels
         }
         private void DeleteContact(Contact? contact)
         {
-            if (contact == null) return;
-            bool result = _dialogService.ShowConfirmation($"Удалить контакт {contact.Name}?","Удаление");
-            if (result)
+            if (contact != null)
             {
                 Contacts.Remove(contact);
                 SelectedContact = null;
