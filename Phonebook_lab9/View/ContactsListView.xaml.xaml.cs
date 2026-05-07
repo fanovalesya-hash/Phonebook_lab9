@@ -18,7 +18,6 @@ namespace Phonebook_lab9
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
         }
     }
 }
